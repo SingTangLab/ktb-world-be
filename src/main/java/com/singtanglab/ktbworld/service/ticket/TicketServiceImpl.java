@@ -128,7 +128,7 @@ public class TicketServiceImpl implements TicketService {
 
         if (filter.equalsIgnoreCase("모집중")) {
             tickets = tickets.stream()
-                    .filter(ticket -> !ticket.getStatus().equalsIgnoreCase("마감") && !isLaundryInProgress(ticket, now))
+                    .filter(ticket -> ticket.getStatus().equalsIgnoreCase("모집중"))
                     .collect(Collectors.toList());
         } else if (filter.equalsIgnoreCase("마감")) {
             tickets = tickets.stream()
@@ -191,6 +191,20 @@ public class TicketServiceImpl implements TicketService {
 
         return new TicketDetailResponse("TICKET_DETAIL_LOADED_SUCCESS", data);
     }
+
+    @Override
+    @Transactional
+    public TicketResponse.Success closeTicket(Long id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket not found with id: " + id));
+
+        ticket.setStatus("마감");
+        Ticket savedTicket = ticketRepository.save(ticket);
+
+        return new TicketResponse.Success("TICKET_CLOSED_SUCCESS", new TicketResponse.Success.TicketData(savedTicket.getId()));
+    }
+
+
 
 }
 

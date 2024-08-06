@@ -11,4 +11,5 @@ public interface TicketService {
     TicketResponse createTicket(TicketRequest request);
     TicketListResponse getTickets(String category, String filter);
     TicketDetailResponse getTicketById(Long id);
+    TicketResponse.Success closeTicket(Long id);
 }

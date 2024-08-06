@@ -44,4 +44,16 @@ public class TicketController {
             return ResponseEntity.status(400).body(new TicketDetailResponse("TICKET_DETAIL_LOAD_FAIL", null));
         }
     }
+
+    @PostMapping("/close/{id}")
+    public ResponseEntity<TicketResponse> closeTicket(@PathVariable Long id) {
+        try {
+            TicketResponse.Success response = ticketService.closeTicket(id);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            TicketResponse.Fail errorResponse = new TicketResponse.Fail("TICKET_CLOSED_FAIL", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
 }
