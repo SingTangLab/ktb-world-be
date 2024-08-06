@@ -10,6 +10,7 @@ import java.util.List;
 public interface TicketService {
     TicketResponse createTicket(TicketRequest request);
     TicketListResponse getTickets(String category, String filter);
+    TicketListResponse getUserTickets(String category, String filter, Long user_id);
     TicketDetailResponse getTicketById(Long id);
     TicketResponse.Success closeTicket(Long id);
 }

@@ -35,6 +35,16 @@ public class TicketController {
         }
     }
 
+    @GetMapping("/users")
+    public ResponseEntity<TicketListResponse> getUserTickets(@RequestParam String category, @RequestParam String filter, @RequestParam Long user_id) {
+        try {
+            TicketListResponse response = ticketService.getUserTickets(category, filter, user_id);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400).body(new TicketListResponse("TICKET_LIST_LOAD_FAIL", 0, null));
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<TicketDetailResponse> getTicketById(@PathVariable Long id) {
         try {

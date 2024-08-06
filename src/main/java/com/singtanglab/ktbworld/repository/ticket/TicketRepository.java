@@ -11,8 +11,6 @@ import java.util.List;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-    @Query("SELECT t FROM Ticket t WHERE t.category = :category AND t.endTime > :now ORDER BY t.createdAt DESC")
-    List<Ticket> findAllLaundryTickets(@Param("category") String category, @Param("now") LocalDateTime now);
 
     @Query("SELECT t FROM Ticket t WHERE t.category = :category ORDER BY t.createdAt DESC")
     List<Ticket> findAllTicketsByCategory(@Param("category") String category);
