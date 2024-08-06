@@ -122,19 +122,23 @@ public class TicketServiceImpl implements TicketService {
             tickets = ticketRepository.findAllTickets(now);
         } else if (category.equalsIgnoreCase("세탁")) {
             tickets = ticketRepository.findActiveLaundryTickets(now);
+            tickets = tickets.stream()
+                    .filter(ticket -> ticket.getEndTime().isAfter(LocalDateTime.now()))
+                    .collect(Collectors.toList());
         } else {
             tickets = ticketRepository.findAllTicketsByCategory(category);
         }
 
         if (filter.equalsIgnoreCase("모집중")) {
             tickets = tickets.stream()
-                    .filter(ticket -> !ticket.getStatus().equalsIgnoreCase("마감") && !isLaundryInProgress(ticket, now))
+                    .filter(ticket -> ticket.getStatus().equalsIgnoreCase("모집중"))
                     .collect(Collectors.toList());
         } else if (filter.equalsIgnoreCase("마감")) {
             tickets = tickets.stream()
-                    .filter(ticket -> ticket.getStatus().equalsIgnoreCase("마감") || isLaundryInProgress(ticket, now))
+                    .filter(ticket -> ticket.getStatus().equalsIgnoreCase("마감"))
                     .collect(Collectors.toList());
         }
+
 
         List<TicketData> ticketDataList = tickets.stream()
                 .map(ticket -> new TicketData(
@@ -146,6 +150,7 @@ public class TicketServiceImpl implements TicketService {
                         ticket.getUserTickets().stream().map(ut -> ut.getUser().getId().intValue()).collect(Collectors.toList()),
                         ticket.getCapacity(),
                         ticket.getStatus(),
+                        (ticket.getStartTime()!=null&&!ticket.getStartTime().equals("")) ? (ticket.getStartTime().isBefore(LocalDateTime.now())  ? "빨래중" : "대기중") : "",
                         ticket.getCreatedAt(),
                         ticket.getStartTime(),
                         ticket.getEndTime(),
@@ -159,9 +164,59 @@ public class TicketServiceImpl implements TicketService {
         return new TicketListResponse("TICKET_LIST_LOADED_SUCCESS", ticketDataList.size(), ticketDataList);
     }
 
-    private boolean isLaundryInProgress(Ticket ticket, LocalDateTime now) {
-        return ticket.getCategory().equalsIgnoreCase("세탁") && !ticket.getStatus().equalsIgnoreCase("마감") && ticket.getStartTime().isBefore(now) && ticket.getEndTime().isAfter(now);
+    @Override
+    @Transactional
+    public TicketListResponse getUserTickets(String category, String filter, Long user_id) {
+        List<Ticket> tickets;
+        LocalDateTime now = LocalDateTime.now();
+
+        if (category.equalsIgnoreCase("전체")) {
+            tickets = ticketRepository.findAllTickets(now);
+        } else if (category.equalsIgnoreCase("세탁")) {
+            tickets = ticketRepository.findActiveLaundryTickets(now);
+            tickets = tickets.stream()
+                    .filter(ticket -> ticket.getEndTime().isAfter(LocalDateTime.now()))
+                    .collect(Collectors.toList());
+        } else {
+            tickets = ticketRepository.findAllTicketsByCategory(category);
+        }
+
+        if (filter.equalsIgnoreCase("모집중")) {
+            tickets = tickets.stream()
+                    .filter(ticket -> ticket.getStatus().equalsIgnoreCase("모집중"))
+                    .collect(Collectors.toList());
+        } else if (filter.equalsIgnoreCase("마감")) {
+            tickets = tickets.stream()
+                    .filter(ticket -> ticket.getStatus().equalsIgnoreCase("마감"))
+                    .collect(Collectors.toList());
+        }
+
+        List<TicketData> ticketDataList = tickets.stream()
+                .map(ticket -> new TicketData(
+                        ticket.getUser().getId(),
+                        ticket.getId(),
+                        ticket.getCategory(),
+                        ticket.getTitle(),
+                        ticket.getDescription(),
+                        ticket.getUserTickets().stream().map(ut -> ut.getUser().getId().intValue()).collect(Collectors.toList()),
+                        ticket.getCapacity(),
+                        ticket.getStatus(),
+                        (ticket.getStartTime()!=null&&!ticket.getStartTime().equals("")) ? (ticket.getStartTime().isBefore(LocalDateTime.now())  ? "빨래중" : "대기중") : "",
+                        ticket.getCreatedAt(),
+                        ticket.getStartTime(),
+                        ticket.getEndTime(),
+                        ticket.getMachineId(),
+                        ticket.getLaundryColor(),
+                        ticket.isDry(),
+                        ticket.getDestination()
+                ))
+                .collect(Collectors.toList());
+        ticketDataList=ticketDataList.stream()
+                    .filter(ticket -> ticket.participant_users().contains(user_id.intValue()))
+                    .collect(Collectors.toList());
+        return new TicketListResponse("TICKET_LIST_LOADED_SUCCESS", ticketDataList.size(), ticketDataList);
     }
+
 
     @Override
     @Transactional
@@ -182,6 +237,7 @@ public class TicketServiceImpl implements TicketService {
                 ticket.getCategory(),
                 ticket.getCategory().equalsIgnoreCase("세탁") ? ticket.getMachineId() : null,
                 ticket.getStatus(),
+                (ticket.getStartTime()!=null&&!ticket.getStartTime().equals("")) ? (ticket.getStartTime().isBefore(LocalDateTime.now())  ? "빨래중" : "대기중") : "",
                 ticket.getTitle(),
                 ticket.getDescription(),
                 participantUsers,
@@ -192,5 +248,16 @@ public class TicketServiceImpl implements TicketService {
         return new TicketDetailResponse("TICKET_DETAIL_LOADED_SUCCESS", data);
     }
 
+    @Override
+    @Transactional
+    public TicketResponse.Success closeTicket(Long id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket not found with id: " + id));
+
+        ticket.setStatus("마감");
+        Ticket savedTicket = ticketRepository.save(ticket);
+
+        return new TicketResponse.Success("TICKET_CLOSED_SUCCESS", new TicketResponse.Success.TicketData(savedTicket.getId()));
+    }
 }
 
