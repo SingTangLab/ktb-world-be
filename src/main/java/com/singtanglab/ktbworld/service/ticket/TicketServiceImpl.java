@@ -139,6 +139,7 @@ public class TicketServiceImpl implements TicketService {
                     .collect(Collectors.toList());
         }
 
+
         List<TicketData> ticketDataList = tickets.stream()
                 .map(ticket -> new TicketData(
                         ticket.getUser().getId(),
@@ -149,6 +150,7 @@ public class TicketServiceImpl implements TicketService {
                         ticket.getUserTickets().stream().map(ut -> ut.getUser().getId().intValue()).collect(Collectors.toList()),
                         ticket.getCapacity(),
                         ticket.getStatus(),
+                        (ticket.getStartTime()!=null&&!ticket.getStartTime().equals("")) ? (ticket.getStartTime().isBefore(LocalDateTime.now())  ? "빨래중" : "대기중") : "",
                         ticket.getCreatedAt(),
                         ticket.getStartTime(),
                         ticket.getEndTime(),
@@ -199,6 +201,7 @@ public class TicketServiceImpl implements TicketService {
                         ticket.getUserTickets().stream().map(ut -> ut.getUser().getId().intValue()).collect(Collectors.toList()),
                         ticket.getCapacity(),
                         ticket.getStatus(),
+                        (ticket.getStartTime()!=null&&!ticket.getStartTime().equals("")) ? (ticket.getStartTime().isBefore(LocalDateTime.now())  ? "빨래중" : "대기중") : "",
                         ticket.getCreatedAt(),
                         ticket.getStartTime(),
                         ticket.getEndTime(),
@@ -234,6 +237,7 @@ public class TicketServiceImpl implements TicketService {
                 ticket.getCategory(),
                 ticket.getCategory().equalsIgnoreCase("세탁") ? ticket.getMachineId() : null,
                 ticket.getStatus(),
+                (ticket.getStartTime()!=null&&!ticket.getStartTime().equals("")) ? (ticket.getStartTime().isBefore(LocalDateTime.now())  ? "빨래중" : "대기중") : "",
                 ticket.getTitle(),
                 ticket.getDescription(),
                 participantUsers,

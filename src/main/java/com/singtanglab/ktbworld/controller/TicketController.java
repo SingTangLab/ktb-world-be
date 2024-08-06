@@ -31,6 +31,7 @@ public class TicketController {
             TicketListResponse response = ticketService.getTickets(category, filter);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
+            e.printStackTrace();
             return ResponseEntity.status(400).body(new TicketListResponse("TICKET_LIST_LOAD_FAIL", 0, null));
         }
     }
@@ -41,6 +42,7 @@ public class TicketController {
             TicketListResponse response = ticketService.getUserTickets(category, filter, user_id);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
+            e.printStackTrace();
             return ResponseEntity.status(400).body(new TicketListResponse("TICKET_LIST_LOAD_FAIL", 0, null));
         }
     }
