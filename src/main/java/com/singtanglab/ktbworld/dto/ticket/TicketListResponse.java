@@ -14,6 +14,7 @@ public record TicketListResponse( String message, int result_count, List<TicketD
             List<Integer> participant_users,
             int capacity,
             String status,
+            String laundry_status,
             LocalDateTime created_at,
             LocalDateTime start_time,
             LocalDateTime end_time,

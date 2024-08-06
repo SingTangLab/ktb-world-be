@@ -8,6 +8,7 @@ public record TicketDetailResponse(String message, TicketData data) {
             String category,
             Integer machine_id,
             String status,
+            String laundry_status,
             String title,
             String description,
             List<String> participant_user,

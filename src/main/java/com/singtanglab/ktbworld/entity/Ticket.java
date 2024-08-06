@@ -104,5 +104,9 @@ public class Ticket extends BaseTimeEntity {
         this.account = account;
         this.startTime = startTime;
     }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
 

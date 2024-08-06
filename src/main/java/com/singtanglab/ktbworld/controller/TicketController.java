@@ -31,6 +31,18 @@ public class TicketController {
             TicketListResponse response = ticketService.getTickets(category, filter);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(400).body(new TicketListResponse("TICKET_LIST_LOAD_FAIL", 0, null));
+        }
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<TicketListResponse> getUserTickets(@RequestParam String category, @RequestParam String filter, @RequestParam Long user_id) {
+        try {
+            TicketListResponse response = ticketService.getUserTickets(category, filter, user_id);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
             return ResponseEntity.status(400).body(new TicketListResponse("TICKET_LIST_LOAD_FAIL", 0, null));
         }
     }
@@ -44,4 +56,16 @@ public class TicketController {
             return ResponseEntity.status(400).body(new TicketDetailResponse("TICKET_DETAIL_LOAD_FAIL", null));
         }
     }
+
+    @PostMapping("/close/{id}")
+    public ResponseEntity<TicketResponse> closeTicket(@PathVariable Long id) {
+        try {
+            TicketResponse.Success response = ticketService.closeTicket(id);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            TicketResponse.Fail errorResponse = new TicketResponse.Fail("TICKET_CLOSED_FAIL", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
 }
