@@ -259,5 +259,29 @@ public class TicketServiceImpl implements TicketService {
 
         return new TicketResponse.Success("TICKET_CLOSED_SUCCESS", new TicketResponse.Success.TicketData(savedTicket.getId()));
     }
+
+    @Override
+    @Transactional
+    public TicketResponse.Success joinTicket(Long ticketId, Long userId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found with id: " + ticketId));
+
+        long participantCount = ticket.getUserTickets().size();
+        if (participantCount >= ticket.getCapacity()) {
+            throw new RuntimeException("The ticket is already full.");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        UserTicket userTicket = UserTicket.builder()
+                .user(user)
+                .ticket(ticket)
+                .build();
+
+        userTicketRepository.save(userTicket);
+
+        return new TicketResponse.Success("TICKET_JOINED_SUCCESS", new TicketResponse.Success.TicketData(ticket.getId()));
+    }
 }
 
