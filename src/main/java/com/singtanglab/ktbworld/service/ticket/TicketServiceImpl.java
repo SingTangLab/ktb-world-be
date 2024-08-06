@@ -122,6 +122,9 @@ public class TicketServiceImpl implements TicketService {
             tickets = ticketRepository.findAllTickets(now);
         } else if (category.equalsIgnoreCase("세탁")) {
             tickets = ticketRepository.findActiveLaundryTickets(now);
+            tickets = tickets.stream()
+                    .filter(ticket -> ticket.getEndTime().isAfter(LocalDateTime.now()))
+                    .collect(Collectors.toList());
         } else {
             tickets = ticketRepository.findAllTicketsByCategory(category);
         }
@@ -132,7 +135,7 @@ public class TicketServiceImpl implements TicketService {
                     .collect(Collectors.toList());
         } else if (filter.equalsIgnoreCase("마감")) {
             tickets = tickets.stream()
-                    .filter(ticket -> ticket.getStatus().equalsIgnoreCase("마감") || isLaundryInProgress(ticket, now))
+                    .filter(ticket -> ticket.getStatus().equalsIgnoreCase("마감"))
                     .collect(Collectors.toList());
         }
 

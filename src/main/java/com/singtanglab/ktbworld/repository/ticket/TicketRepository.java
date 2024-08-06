@@ -20,9 +20,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("SELECT t.machineId FROM Ticket t WHERE t.category = '세탁' AND t.startTime = :startTime AND t.endTime = :endTime")
     List<Integer> findBookedMachineIds(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
-    @Query("SELECT t FROM Ticket t WHERE t.category = '세탁' AND t.endTime > :now ORDER BY t.createdAt DESC")
+    @Query("SELECT t FROM Ticket t WHERE (t.category = '세탁' AND t.endTime > :now) ORDER BY t.createdAt DESC")
     List<Ticket> findActiveLaundryTickets(@Param("now") LocalDateTime now);
 
-    @Query("SELECT t FROM Ticket t WHERE (t.category <> 'LAUNDRY' OR t.endTime > :now) ORDER BY t.createdAt DESC")
+    @Query("SELECT t FROM Ticket t WHERE (t.category = '세탁' and t.endTime > :now or t.category <> '세탁') ORDER BY t.createdAt DESC")
     List<Ticket> findAllTickets(@Param("now") LocalDateTime now);
 }
