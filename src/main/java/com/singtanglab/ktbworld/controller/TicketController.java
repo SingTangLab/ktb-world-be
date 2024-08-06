@@ -1,9 +1,6 @@
 package com.singtanglab.ktbworld.controller;
 
-import com.singtanglab.ktbworld.dto.ticket.TicketDetailResponse;
-import com.singtanglab.ktbworld.dto.ticket.TicketListResponse;
-import com.singtanglab.ktbworld.dto.ticket.TicketRequest;
-import com.singtanglab.ktbworld.dto.ticket.TicketResponse;
+import com.singtanglab.ktbworld.dto.ticket.*;
 import com.singtanglab.ktbworld.service.ticket.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -64,6 +61,17 @@ public class TicketController {
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             TicketResponse.Fail errorResponse = new TicketResponse.Fail("TICKET_CLOSED_FAIL", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @PostMapping("/join")
+    public ResponseEntity<TicketResponse> joinTicket(@RequestBody JoinTicketRequest request) {
+        try {
+            TicketResponse.Success response = ticketService.joinTicket(request.ticket_id(), request.user_id());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            TicketResponse.Fail errorResponse = new TicketResponse.Fail("TICKET_JOIN_FAIL", e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
