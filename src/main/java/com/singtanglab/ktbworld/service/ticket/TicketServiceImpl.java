@@ -143,6 +143,7 @@ public class TicketServiceImpl implements TicketService {
         List<TicketData> ticketDataList = tickets.stream()
                 .map(ticket -> new TicketData(
                         ticket.getUser().getId(),
+                        ticket.getUser().getNickname(),
                         ticket.getId(),
                         ticket.getCategory(),
                         ticket.getTitle(),
@@ -194,6 +195,7 @@ public class TicketServiceImpl implements TicketService {
         List<TicketData> ticketDataList = tickets.stream()
                 .map(ticket -> new TicketData(
                         ticket.getUser().getId(),
+                        ticket.getUser().getNickname(),
                         ticket.getId(),
                         ticket.getCategory(),
                         ticket.getTitle(),
