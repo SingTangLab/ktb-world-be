@@ -8,5 +8,5 @@ import java.util.List;
 public interface UserService {
     UserInfoDto login(LoginRequest request);
     List<UserInfoDto> findAllUsers();
-    List<UserInfoDto> findUsersByNicknameContaining(String nickname);
+    List<UserInfoDto> getAllUsers();
 }

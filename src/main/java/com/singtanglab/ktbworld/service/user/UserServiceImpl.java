@@ -59,15 +59,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional  // 트랜잭션을 관리
-    public List<UserInfoDto> findUsersByNicknameContaining(String nickname) {
-        try {
-            List<User> users = userRepository.findByNicknameContaining(nickname);  // 닉네임에 특정 문자가 포함된 유저를 조회
-            return users.stream()  // 각 유저에 대해
-                    .map(user -> new UserInfoDto(user.getId(), user.getNickname()))  // UserInfoDto로 변환
-                    .collect(Collectors.toList());  // 리스트로 수집
-        } catch (Exception e) {
-            log.error("Exception during fetching users by nickname containing '{}': {}", nickname, e.getMessage());  // 유저 조회 중 예외 발생 시 로그
-            throw new RuntimeException("Failed to fetch users by nickname containing '" + nickname + "'", e);  // 예외를 다시 던짐
-        }
+    public List<UserInfoDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(user -> new UserInfoDto(user.getId(), user.getNickname()))
+                .collect(Collectors.toList());
     }
 }
