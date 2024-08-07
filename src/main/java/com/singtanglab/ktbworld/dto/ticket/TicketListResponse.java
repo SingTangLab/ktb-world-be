@@ -7,6 +7,7 @@ import com.singtanglab.ktbworld.entity.User;
 public record TicketListResponse( String message, int result_count, List<TicketData> tickets) {
     public record TicketData(
             Long user_id,
+            String nickname,
             Long ticket_id,
             String category,
             String title,
