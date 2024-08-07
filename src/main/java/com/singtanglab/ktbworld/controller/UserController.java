@@ -38,15 +38,5 @@ public class UserController {
         }
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<SearchResponse> searchUsers(@RequestParam("nickname") String nickname) {
-        try {
-            List<UserInfoDto> users = userService.findUsersByNicknameContaining(nickname);  // 닉네임에 특정 문자가 포함된 유저 조회
-            SearchResponse.SearchData searchData = new SearchResponse.SearchData(users.size(), users);
-            SearchResponse response = new SearchResponse("USER_LIST_LOADED_SUCCESS", searchData);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body(null);
-        }
-    }
+
 }
